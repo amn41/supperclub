@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saturday Supper Club</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --cream: #FDF8F3;
+            --warm-white: #FFFCF9;
+            --terracotta: #C67D5A;
+            --terracotta-light: #E8A889;
+            --terracotta-dark: #A66544;
+            --olive: #7D8B6A;
+            --olive-light: #9BAA87;
+            --charcoal: #3D3D3D;
+            --warm-gray: #8B8178;
+            --border: #E8E0D8;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--cream);
+            color: var(--charcoal);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 2.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            color: var(--warm-gray);
+            font-size: 1.1rem;
+        }
+        
+        .year-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .year-selector button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--warm-gray);
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+        
+        .year-selector button:hover {
+            color: var(--terracotta);
+        }
+        
+        .year-display {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 24px;
+            padding: 16px 24px;
+            background: var(--warm-white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: var(--terracotta);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--warm-gray);
+            margin-top: 2px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: var(--warm-white);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 24px;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .saturday-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 80px;
+        }
+        
+        .saturday-card:hover {
+            border-color: var(--terracotta-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(198, 125, 90, 0.1);
+        }
+        
+        .saturday-card.confirmed {
+            background: linear-gradient(135deg, #FEF7F4 0%, #FDF2ED 100%);
+            border-color: var(--terracotta-light);
+        }
+        
+        .saturday-card.past {
+            opacity: 0.5;
+        }
+        
+        .saturday-date {
+            font-size: 0.75rem;
+            color: var(--warm-gray);
+            margin-bottom: 4px;
+        }
+        
+        .saturday-guests {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+        
+        .saturday-empty {
+            font-size: 0.85rem;
+            color: var(--warm-gray);
+            font-style: italic;
+        }
+        
+        .guest-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .guest-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--cream);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .guest-card:hover {
+            border-color: var(--olive-light);
+        }
+        
+        .guest-card.confirmed {
+            background: linear-gradient(135deg, #F7F9F5 0%, #F2F5EE 100%);
+            border-color: var(--olive-light);
+        }
+        
+        .guest-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .guest-avatar.candidate {
+            background: var(--border);
+            color: var(--warm-gray);
+        }
+        
+        .guest-avatar.confirmed {
+            background: var(--olive);
+            color: white;
+        }
+        
+        .guest-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .guest-name {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .guest-meta {
+            font-size: 0.8rem;
+            color: var(--warm-gray);
+        }
+        
+        .guest-status {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .guest-status.candidate {
+            background: var(--border);
+            color: var(--warm-gray);
+        }
+        
+        .guest-status.confirmed {
+            background: var(--olive-light);
+            color: white;
+        }
+        
+        .add-btn {
+            background: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .add-btn:hover {
+            background: var(--terracotta-dark);
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(61, 61, 61, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--warm-white);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--charcoal);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--cream);
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--terracotta);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--terracotta);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--terracotta-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--cream);
+            color: var(--charcoal);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        .btn-danger {
+            background: #E57373;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #D32F2F;
+        }
+        
+        .date-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        
+        .date-option {
+            padding: 10px 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--cream);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .date-option:hover {
+            border-color: var(--terracotta);
+        }
+        
+        .date-option.selected {
+            background: var(--terracotta);
+            color: white;
+            border-color: var(--terracotta);
+        }
+        
+        .date-option.taken {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: var(--cream);
+            padding: 4px;
+            border-radius: 8px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--warm-gray);
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: var(--warm-white);
+            color: var(--charcoal);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--warm-gray);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        
+        .sync-status {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .sync-status.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .sync-status.syncing {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            color: var(--warm-gray);
+        }
+        
+        .sync-status.synced {
+            background: var(--olive-light);
+            color: white;
+        }
+        
+        .sync-status.error {
+            background: #E57373;
+            color: white;
+        }
+        
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--warm-gray);
+            transition: all 0.2s;
+        }
+        
+        .refresh-btn:hover {
+            border-color: var(--terracotta);
+            color: var(--terracotta);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Saturday Supper Club</h1>
+            <p class="subtitle">Building community, one Saturday at a time</p>
+            
+            <div class="year-selector">
+                <button onclick="changeYear(-1)">←</button>
+                <span class="year-display" id="yearDisplay">2026</span>
+                <button onclick="changeYear(1)">→</button>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="totalSaturdays">52</div>
+                    <div class="stat-label">Saturdays</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="plannedCount">0</div>
+                    <div class="stat-label">Planned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="candidateCount">0</div>
+                    <div class="stat-label">Candidates</div>
+                </div>
+                <button class="refresh-btn" onclick="loadData()" title="Refresh data">↻ Sync</button>
+            </div>
+        </header>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">📅 The Year Ahead</h2>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">👥 Guest List</h2>
+                    <button class="add-btn" onclick="openAddGuestModal()">+ Add Guest</button>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('candidates')">Candidates</button>
+                    <button class="tab" onclick="switchTab('confirmed')">Confirmed</button>
+                </div>
+                
+                <div class="guest-list" id="guestList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sync-status" id="syncStatus">
+        <span id="syncText">Syncing...</span>
+    </div>
+    
+    <!-- Add Guest Modal -->
+    <div class="modal-overlay" id="addGuestModal">
+        <div class="modal">
+            <h3 class="modal-title">Add a Guest</h3>
+            <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="guestName" placeholder="Who would you like to have over?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">How do you know them?</label>
+                <input type="text" class="form-input" id="guestRelation" placeholder="e.g., Neighbours, Work friends, Old uni mates">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes (optional)</label>
+                <input type="text" class="form-input" id="guestNotes" placeholder="Any dietary needs or things to remember">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addGuestModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addGuest()">Add to List</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Guest Modal -->
+    <div class="modal-overlay" id="editGuestModal">
+        <div class="modal">
+            <h3 class="modal-title" id="editGuestTitle">Edit Guest</h3>
+            <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="editGuestName">
+            </div>
+            <div class="form-group">
+                <label class="form-label">How do you know them?</label>
+                <input type="text" class="form-input" id="editGuestRelation">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <input type="text" class="form-input" id="editGuestNotes">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm for a Saturday</label>
+                <div class="date-selection" id="dateSelection"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="deleteGuest()">Remove</button>
+                <button class="btn btn-secondary" onclick="closeModal('editGuestModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveGuest()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Saturday Detail Modal -->
+    <div class="modal-overlay" id="saturdayModal">
+        <div class="modal">
+            <h3 class="modal-title" id="saturdayTitle">Saturday, Jan 4</h3>
+            <div id="saturdayContent"></div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('saturdayModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION - Update this with your bin ID after first run
+        // ============================================
+        const JSONBIN_API_KEY = '$2a$10$7eR/56TE/hUp6I66yF6Jf.qeSE5SWxMz..FYAmojd97rmfh.ktRw2';
+        const JSONBIN_BIN_ID = ''; // Leave empty on first run, it will create one
+        // ============================================
+        
+        let currentYear = 2026;
+        let currentTab = 'candidates';
+        let editingGuestId = null;
+        let guests = [];
+        let binId = JSONBIN_BIN_ID;
+        
+        function showSyncStatus(status, message) {
+            const el = document.getElementById('syncStatus');
+            const text = document.getElementById('syncText');
+            el.className = 'sync-status visible ' + status;
+            text.textContent = message;
+            if (status !== 'syncing') {
+                setTimeout(() => el.classList.remove('visible'), 2000);
+            }
+        }
+        
+        async function createBin() {
+            showSyncStatus('syncing', 'Creating shared list...');
+            const response = await fetch('https://api.jsonbin.io/v3/b', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': JSONBIN_API_KEY,
+                    'X-Bin-Name': 'Saturday Supper Club'
+                },
+                body: JSON.stringify({ guests: [] })
+            });
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.message || 'Failed to create bin');
+            }
+            
+            const data = await response.json();
+            binId = data.metadata.id;
+            
+            // Show the bin ID so user can save it
+            alert(`Created new bin!\n\nIMPORTANT: Copy this bin ID and add it to the JSONBIN_BIN_ID constant in the HTML file:\n\n${binId}\n\nThis ensures you and your wife share the same data.`);
+            console.log('NEW BIN ID - add this to JSONBIN_BIN_ID:', binId);
+            
+            showSyncStatus('synced', 'Ready!');
+            return binId;
+        }
+        
+        async function loadData() {
+            if (!binId) return;
+            
+            showSyncStatus('syncing', 'Loading...');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load');
+                
+                const data = await response.json();
+                guests = data.record.guests || [];
+                renderCalendar();
+                renderGuestList();
+                showSyncStatus('synced', 'Synced');
+            } catch (error) {
+                console.error('Load error:', error);
+                showSyncStatus('error', 'Error loading');
+            }
+        }
+        
+        async function saveData() {
+            if (!binId) return;
+            
+            showSyncStatus('syncing', 'Saving...');
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_API_KEY
+                    },
+                    body: JSON.stringify({ guests })
+                });
+                
+                if (!response.ok) throw new Error('Failed to save');
+                showSyncStatus('synced', 'Saved');
+            } catch (error) {
+                console.error('Save error:', error);
+                showSyncStatus('error', 'Error saving');
+            }
+        }
+        
+        async function init() {
+            if (!binId) {
+                await createBin();
+            }
+            await loadData();
+        }
+        
+        function getSaturdaysInYear(year) {
+            const saturdays = [];
+            const date = new Date(year, 0, 1);
+            while (date.getDay() !== 6) date.setDate(date.getDate() + 1);
+            while (date.getFullYear() === year) {
+                saturdays.push(new Date(date));
+                date.setDate(date.getDate() + 7);
+            }
+            return saturdays;
+        }
+        
+        function formatDate(date, format = 'short') {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const fullMonths = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            return format === 'short' 
+                ? `${months[date.getMonth()]} ${date.getDate()}`
+                : `Saturday, ${fullMonths[date.getMonth()]} ${date.getDate()}`;
+        }
+        
+        function getDateKey(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        
+        function isPast(date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date < today;
+        }
+        
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+        
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const saturdays = getSaturdaysInYear(currentYear);
+            
+            grid.innerHTML = saturdays.map(sat => {
+                const dateKey = getDateKey(sat);
+                const guest = guests.find(g => g.confirmedDate === dateKey);
+                const past = isPast(sat);
+                
+                return `
+                    <div class="saturday-card ${guest ? 'confirmed' : ''} ${past ? 'past' : ''}" 
+                         onclick="openSaturdayModal('${dateKey}')">
+                        <div class="saturday-date">${formatDate(sat)}</div>
+                        ${guest 
+                            ? `<div class="saturday-guests">${guest.name}</div>`
+                            : `<div class="saturday-empty">Open</div>`
+                        }
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('totalSaturdays').textContent = saturdays.length;
+            document.getElementById('plannedCount').textContent = guests.filter(g => g.confirmedDate && g.confirmedDate.startsWith(currentYear)).length;
+            document.getElementById('candidateCount').textContent = guests.filter(g => !g.confirmedDate).length;
+            document.getElementById('yearDisplay').textContent = currentYear;
+        }
+        
+        function renderGuestList() {
+            const list = document.getElementById('guestList');
+            const filteredGuests = guests.filter(g => 
+                currentTab === 'candidates' ? !g.confirmedDate : g.confirmedDate
+            );
+            
+            if (filteredGuests.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">${currentTab === 'candidates' ? '🤔' : '🎉'}</div>
+                        <p>${currentTab === 'candidates' 
+                            ? 'No candidates yet. Add some people you\'d like to have over!' 
+                            : 'No confirmed dinners yet. Click on a candidate to confirm a date!'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = filteredGuests.map(guest => {
+                const statusClass = guest.confirmedDate ? 'confirmed' : 'candidate';
+                const dateDisplay = guest.confirmedDate 
+                    ? formatDate(new Date(guest.confirmedDate + 'T12:00:00'))
+                    : guest.relation || 'Candidate';
+                    
+                return `
+                    <div class="guest-card ${statusClass}" onclick="openEditGuestModal('${guest.id}')">
+                        <div class="guest-avatar ${statusClass}">${getInitials(guest.name)}</div>
+                        <div class="guest-info">
+                            <div class="guest-name">${guest.name}</div>
+                            <div class="guest-meta">${dateDisplay}</div>
+                        </div>
+                        <span class="guest-status ${statusClass}">
+                            ${guest.confirmedDate ? 'Confirmed' : 'Candidate'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.textContent.toLowerCase() === currentTab);
+            });
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            renderGuestList();
+        }
+        
+        function changeYear(delta) {
+            currentYear += delta;
+            renderCalendar();
+        }
+        
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        
+        function openAddGuestModal() {
+            document.getElementById('guestName').value = '';
+            document.getElementById('guestRelation').value = '';
+            document.getElementById('guestNotes').value = '';
+            openModal('addGuestModal');
+        }
+        
+        function addGuest() {
+            const name = document.getElementById('guestName').value.trim();
+            if (!name) return;
+            
+            guests.push({
+                id: Date.now().toString(),
+                name,
+                relation: document.getElementById('guestRelation').value.trim(),
+                notes: document.getElementById('guestNotes').value.trim(),
+                confirmedDate: null
+            });
+            
+            saveData();
+            renderGuestList();
+            renderCalendar();
+            closeModal('addGuestModal');
+        }
+        
+        function openEditGuestModal(guestId) {
+            const guest = guests.find(g => g.id === guestId);
+            if (!guest) return;
+            
+            editingGuestId = guestId;
+            document.getElementById('editGuestTitle').textContent = guest.name;
+            document.getElementById('editGuestName').value = guest.name;
+            document.getElementById('editGuestRelation').value = guest.relation || '';
+            document.getElementById('editGuestNotes').value = guest.notes || '';
+            
+            const saturdays = getSaturdaysInYear(currentYear);
+            const takenDates = guests.filter(g => g.confirmedDate && g.id !== guestId).map(g => g.confirmedDate);
+            
+            document.getElementById('dateSelection').innerHTML = saturdays
+                .filter(sat => !isPast(sat))
+                .slice(0, 24)
+                .map(sat => {
+                    const dateKey = getDateKey(sat);
+                    const taken = takenDates.includes(dateKey);
+                    const selected = guest.confirmedDate === dateKey;
+                    
+                    return `
+                        <div class="date-option ${taken ? 'taken' : ''} ${selected ? 'selected' : ''}"
+                             onclick="${taken ? '' : `selectDate('${dateKey}')`}">
+                            ${formatDate(sat)}
+                        </div>
+                    `;
+                }).join('');
+            
+            openModal('editGuestModal');
+        }
+        
+        function selectDate(dateKey) {
+            document.querySelectorAll('.date-option').forEach(el => {
+                el.classList.toggle('selected', el.onclick?.toString().includes(dateKey));
+            });
+        }
+        
+        function saveGuest() {
+            const guest = guests.find(g => g.id === editingGuestId);
+            if (!guest) return;
+            
+            guest.name = document.getElementById('editGuestName').value.trim();
+            guest.relation = document.getElementById('editGuestRelation').value.trim();
+            guest.notes = document.getElementById('editGuestNotes').value.trim();
+            
+            const selectedDate = document.querySelector('.date-option.selected');
+            guest.confirmedDate = selectedDate 
+                ? selectedDate.onclick?.toString().match(/selectDate\('([^']+)'\)/)?.[1] || null 
+                : null;
+            
+            saveData();
+            renderGuestList();
+            renderCalendar();
+            closeModal('editGuestModal');
+        }
+        
+        function deleteGuest() {
+            if (!confirm('Remove this guest from the list?')) return;
+            guests = guests.filter(g => g.id !== editingGuestId);
+            saveData();
+            renderGuestList();
+            renderCalendar();
+            closeModal('editGuestModal');
+        }
+        
+        function openSaturdayModal(dateKey) {
+            const date = new Date(dateKey + 'T12:00:00');
+            const guest = guests.find(g => g.confirmedDate === dateKey);
+            
+            document.getElementById('saturdayTitle').textContent = formatDate(date, 'long');
+            
+            if (guest) {
+                document.getElementById('saturdayContent').innerHTML = `
+                    <div style="padding: 20px; background: var(--cream); border-radius: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <div class="guest-avatar confirmed" style="width: 48px; height: 48px; font-size: 1rem;">
+                                ${getInitials(guest.name)}
+                            </div>
+                            <div>
+                                <div style="font-weight: 500; font-size: 1.1rem;">${guest.name}</div>
+                                ${guest.relation ? `<div style="color: var(--warm-gray); font-size: 0.9rem;">${guest.relation}</div>` : ''}
+                            </div>
+                        </div>
+                        ${guest.notes ? `<div style="color: var(--warm-gray); font-size: 0.9rem; padding-top: 12px; border-top: 1px solid var(--border);">📝 ${guest.notes}</div>` : ''}
+                    </div>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="openEditGuestModal('${guest.id}'); closeModal('saturdayModal');">
+                        Edit Details
+                    </button>
+                `;
+            } else {
+                const candidates = guests.filter(g => !g.confirmedDate);
+                document.getElementById('saturdayContent').innerHTML = `
+                    <p style="color: var(--warm-gray); margin-bottom: 16px;">This Saturday is open. ${candidates.length > 0 ? 'Invite someone from your list!' : 'Add some candidates to get started.'}</p>
+                    ${candidates.length > 0 ? `
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            ${candidates.slice(0, 5).map(c => `
+                                <div class="guest-card" onclick="quickConfirm('${c.id}', '${dateKey}')">
+                                    <div class="guest-avatar candidate">${getInitials(c.name)}</div>
+                                    <div class="guest-info">
+                                        <div class="guest-name">${c.name}</div>
+                                        <div class="guest-meta">${c.relation || 'Candidate'}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                `;
+            }
+            
+            openModal('saturdayModal');
+        }
+        
+        function quickConfirm(guestId, dateKey) {
+            const guest = guests.find(g => g.id === guestId);
+            if (guest) {
+                guest.confirmedDate = dateKey;
+                saveData();
+                renderGuestList();
+                renderCalendar();
+                closeModal('saturdayModal');
+            }
+        }
+        
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+        
+        init();
+    </script>
+</body>
+</html>
